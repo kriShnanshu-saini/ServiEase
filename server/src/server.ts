@@ -1,9 +1,25 @@
-import app from './app';
-import { env } from './utils/envConfig';
+import { connectToDatabase } from '@lib/config/dbConfig';
+import { app } from './app';
+import { env } from '@lib/config/envConfig';
+import '@lib/utils/logging';
 
-const PORT: number = env.PORT;
+logging.log('----------------------------------------');
+logging.log('Starting Server');
+logging.log('----------------------------------------');
 
-app.listen(PORT, () => {
-    const { HOST, PORT, NODE_ENV } = env;
-    console.log(`Server (${NODE_ENV}) is running on http://${HOST}:${PORT}`);
-});
+const httpServer = async () => {
+    await connectToDatabase();
+    app.listen(env.PORT, () => {
+        const { HOST, PORT, NODE_ENV } = env;
+
+        logging.log('----------------------------------------');
+        logging.log(
+            `Server (${NODE_ENV}) is running on http://${HOST}:${PORT}`
+        );
+        logging.log('----------------------------------------');
+    });
+};
+httpServer();
+
+// export const Shutdown = (callback: any) =>
+//     httpServer && httpServer.close(callback);
